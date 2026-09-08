@@ -1,0 +1,11 @@
+*.env
+
+bin/
+obj/
+
+.vs/
+.vscode/
+
+.DS_Store
+Thumbs.db
+desktop.ini

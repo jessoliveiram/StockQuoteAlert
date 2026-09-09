@@ -1,67 +1,42 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using System.Threading.Tasks;
-using DotNetEnv;
+﻿using DotNetEnv;
+using System.Globalization;
+using StockQuoteAlert.Clients.BRAPI;
 
-public class Quote
+public static class Program
 {
-    public string Symbol { get; set; }
-    public string ShortName { get; set; }
-    public decimal RegularMarketPrice { get; set; }
-    public decimal RegularMarketChangePercent { get; set; }
-    public string Currency { get; set; }
-}
-
-public class QuoteResponse
-{
-    public Quote[] Results { get; set; }
-}
-
-public class BrapiClient
-{
-    private readonly HttpClient _httpClient;
-    private const string BaseUrl = "https://brapi.dev/api";
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    public static async Task Main()
     {
-        PropertyNameCaseInsensitive = true
-    };
+        Console.Write("Enter ticker, sell price and buy price: ");
+        var args = Console.ReadLine()?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-    public BrapiClient(string token)
-    {
-        _httpClient = new HttpClient
+        if (args is null || args.Length != 3)
         {
-            Timeout = TimeSpan.FromSeconds(10)
-        };
-        _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-    }
+            Console.WriteLine("Usage: <TICKER> <SELL_PRICE> <BUY_PRICE>");
+            Console.WriteLine("Example: PETR4 22.67 22.59");
+            return;
+        }
 
-    public async Task<Quote> GetQuoteAsync(string ticker)
-    {
-        var url = $"{BaseUrl}/quote/{ticker}";
-        var response = await _httpClient.GetStringAsync(url);
+        if (!decimal.TryParse(args[1], NumberStyles.Number, CultureInfo.InvariantCulture, out _) ||
+            !decimal.TryParse(args[2], NumberStyles.Number, CultureInfo.InvariantCulture, out _))
+        {
+            Console.WriteLine("Selling and buying prices must be valid decimal numbers.");
+            return;
+        }
 
-        var data = JsonSerializer.Deserialize<QuoteResponse>(response, JsonOptions);
-        return data?.Results?[0];
-    }
-
-    static async Task Main()
-    {
         Env.TraversePath().Load("local.env");
         var token = Environment.GetEnvironmentVariable("BRAPI_TOKEN");
 
-        if (token == null)
+        if (string.IsNullOrWhiteSpace(token))
         {
             Console.WriteLine("BRAPI_TOKEN not found in environment variables.");
             return;
         }
 
-        var client = new BrapiClient(token);
-        var quote = await client.GetQuoteAsync("PETR4");
-        
-        if (quote == null)
+        var brapiClient = new BRAPIClient(token);
+        var ticker = args[0].ToUpperInvariant();
+        var quote = await brapiClient.GetQuoteAsync(ticker);
+
+        if (quote is null)
         {
             Console.WriteLine("Quote not found.");
             return;

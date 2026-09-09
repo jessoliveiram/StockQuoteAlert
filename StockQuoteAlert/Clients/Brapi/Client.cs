@@ -14,14 +14,22 @@ public class BRAPIClient
         PropertyNameCaseInsensitive = true
     };
     
-    public BRAPIClient(string token)
+    public BRAPIClient(string token): this(CreateHttpClient(token)){}
+
+    public BRAPIClient(HttpClient httpClient)
     {
-        _httpClient = new HttpClient()
+        _httpClient = httpClient;
+    }
+
+    private static HttpClient CreateHttpClient(string token)
+    {
+        var httpClient = new HttpClient()
         {
             Timeout = TimeSpan.FromSeconds(10)
         };
-        _httpClient.DefaultRequestHeaders.Authorization =
+        httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
+        return httpClient;
     }
 
     public async Task<Quote?> GetQuoteAsync(string ticker, CancellationToken ct = default)
@@ -30,6 +38,6 @@ public class BRAPIClient
         var response = await _httpClient.GetStringAsync(url, ct);
 
         var data = JsonSerializer.Deserialize<QuoteResponse>(response, JsonOptions);
-        return data?.Results?[0];
+        return data?.Results?.FirstOrDefault();
     }
 }

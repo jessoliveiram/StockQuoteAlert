@@ -16,8 +16,8 @@ public static class Program
             return;
         }
 
-        if (!decimal.TryParse(args[1], NumberStyles.Number, CultureInfo.InvariantCulture, out _) ||
-            !decimal.TryParse(args[2], NumberStyles.Number, CultureInfo.InvariantCulture, out _))
+        if (!decimal.TryParse(args[1], NumberStyles.Number, CultureInfo.InvariantCulture, out var sellPrice) ||
+            !decimal.TryParse(args[2], NumberStyles.Number, CultureInfo.InvariantCulture, out var buyPrice))
         {
             Console.WriteLine("Selling and buying prices must be valid decimal numbers.");
             return;
@@ -42,6 +42,25 @@ public static class Program
             return;
         }
 
-        Console.WriteLine($"{quote.Symbol}: R$ {quote.RegularMarketPrice:F2}");
+        var price = quote.RegularMarketPrice;
+        var status = string.Empty;
+
+        if (price >= sellPrice)
+        {
+            Console.WriteLine("State Sell Alert");
+            status = "Sell Alert";
+        }
+        if (price <= buyPrice)
+        {
+            Console.WriteLine("State Buy Alert");
+            status = "Buy Alert";
+        }
+        if (price > buyPrice && price < sellPrice)
+        {
+            Console.WriteLine("State Neutral");
+            status = "Neutral";
+        }
+
+        Console.WriteLine($"{quote.Symbol}: R$ {price:F2}. Status: {status}");
     }
 }

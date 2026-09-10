@@ -1,6 +1,9 @@
 ﻿using DotNetEnv;
 using System.Globalization;
 using StockQuoteAlert.Clients.BRAPI;
+using StockQuoteAlert.Observer;
+using StockQuoteAlert.StateMachine;
+using StockQuoteAlert.StateMachine.States;
 
 public static class Program
 {
@@ -43,24 +46,10 @@ public static class Program
         }
 
         var price = quote.RegularMarketPrice;
-        var status = string.Empty;
 
-        if (price >= sellPrice)
-        {
-            Console.WriteLine("State Sell Alert");
-            status = "Sell Alert";
-        }
-        if (price <= buyPrice)
-        {
-            Console.WriteLine("State Buy Alert");
-            status = "Buy Alert";
-        }
-        if (price > buyPrice && price < sellPrice)
-        {
-            Console.WriteLine("State Neutral");
-            status = "Neutral";
-        }
-
-        Console.WriteLine($"{quote.Symbol}: R$ {price:F2}. Status: {status}");
+        var context = new Context(new Neutral());
+        var alert = ObserverQuote.MonitorPrice(context, price, sellPrice, buyPrice);
+        
+        Console.WriteLine($"{quote.Symbol}: R$ {price:F2}. Action: {alert}");
     }
 }

@@ -61,7 +61,8 @@ public class Program
         var brapiClient = new BRAPIClient(token);
         var ticker = args[0].ToUpperInvariant();
 
-        var context = new Context(new Neutral());
-        await ObserverQuote.ObserverPrice(context, ticker, sellPrice, buyPrice, observerInterval, brapiClient);
+        var stockStateContext = new Context(new Neutral());
+        var observerQuote = new ObserverQuote(observerInterval, brapiClient, stockStateContext);
+        await observerQuote.ObserverPrice(ticker, sellPrice, buyPrice);
     }
 }

@@ -1,18 +1,34 @@
 using StockQuoteAlert.StateMachine;
 using StockQuoteAlert.Clients.BRAPI;
 using PeriodicTimer = System.Threading.PeriodicTimer;
+using StockQuoteAlert.StateMachine.States;
 
 namespace StockQuoteAlert.Observer;
 
 internal class ObserverQuote
 {
-    public static async Task ObserverPrice(Context context, string ticker, decimal sellPrice, decimal buyPrice, int intervalSeconds, BRAPIClient brapiClient)
+    private readonly int _intervalSeconds;
+    private readonly BRAPIClient _brapiClient;
+    private readonly Context _stockStateContext;
+
+    private const string BuyAlert = "You should buy the stock.";
+    private const string SellAlert = "You should sell the stock.";
+    private const string Neutral = "You should hold the stock.";
+
+    public ObserverQuote(int intervalSeconds, BRAPIClient brapiClient, Context stockStateContext)
     {
-        var timer = new PeriodicTimer(TimeSpan.FromSeconds(intervalSeconds));
+        _brapiClient = brapiClient;
+        _intervalSeconds = intervalSeconds;
+        _stockStateContext = stockStateContext;
+    }
+
+    public async Task ObserverPrice(string ticker, decimal sellPrice, decimal buyPrice)
+    {
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(_intervalSeconds));
 
         while (await timer.WaitForNextTickAsync())
         {
-            var quote = await brapiClient.GetQuoteAsync(ticker);
+            var quote = await _brapiClient.GetQuoteAsync(ticker);
             if (quote is null)
             {
                 Console.WriteLine("Quote not found.");
@@ -20,30 +36,44 @@ internal class ObserverQuote
             }
 
             var price = quote.RegularMarketPrice;
-            var alert = CheckPrice(context, price, sellPrice, buyPrice);
-            Console.WriteLine($"{quote.Symbol}: R$ {price:F2}. Current State: {alert}");
+            var action = await CheckPrice(price, sellPrice, buyPrice);
+
+            switch (action)
+            {
+                case BuyAlert:
+                    _stockStateContext.TriggerBuyAlert();
+                    Console.WriteLine(BuyAlert);
+                    break;
+
+                case SellAlert:
+                    _stockStateContext.TriggerSellAlert();
+                    Console.WriteLine(SellAlert);
+                    break;
+
+                default:
+                    _stockStateContext.TriggerNeutral();
+                    Console.WriteLine(Neutral);
+                    break;
+            }
         }
     }
 
-    public static string CheckPrice(Context context, decimal price, decimal sellPrice, decimal buyPrice)
+    public async Task<string> CheckPrice(decimal price, decimal sellPrice, decimal buyPrice)
     {
         if (ShouldSell(sellPrice, price))
         {
             Console.WriteLine($"Price {price} is greater than or equal to sell price {sellPrice}");
-            context.TriggerSellAlert();
-            return context.CurrentState.GetType().Name; 
+            return SellAlert;
         }
         else if (ShouldBuy(buyPrice, price))
         {
             Console.WriteLine($"Price {price} is less than or equal to buy price {buyPrice}");
-            context.TriggerBuyAlert();
-            return context.CurrentState.GetType().Name;
+            return BuyAlert;
         }
         else
         {
             Console.WriteLine($"Price {price} is between sell price {sellPrice} and buy price {buyPrice}.");
-            context.TriggerNeutral();
-            return context.CurrentState.GetType().Name;
+            return Neutral;
         }
     }
 

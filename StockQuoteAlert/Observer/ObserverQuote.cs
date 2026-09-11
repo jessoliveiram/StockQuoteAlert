@@ -1,10 +1,31 @@
 using StockQuoteAlert.StateMachine;
+using StockQuoteAlert.Clients.BRAPI;
+using PeriodicTimer = System.Threading.PeriodicTimer;
 
 namespace StockQuoteAlert.Observer;
 
 internal class ObserverQuote
 {
-    public static string MonitorPrice(Context context, decimal price, decimal sellPrice, decimal buyPrice)
+    public static async Task ObserverPrice(Context context, BRAPIClient brapiClient, string ticker, decimal sellPrice, decimal buyPrice)
+    {
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(60));
+
+        while (await timer.WaitForNextTickAsync())
+        {
+            var quote = await brapiClient.GetQuoteAsync(ticker);
+            if (quote is null)
+            {
+                Console.WriteLine("Quote not found.");
+                return;
+            }
+
+            var price = quote.RegularMarketPrice;
+            var alert = CheckPrice(context, price, sellPrice, buyPrice);
+            Console.WriteLine($"{quote.Symbol}: R$ {price:F2}. Current State: {alert}");
+        }
+    }
+
+    public static string CheckPrice(Context context, decimal price, decimal sellPrice, decimal buyPrice)
     {
         if (ShouldSell(sellPrice, price))
         {

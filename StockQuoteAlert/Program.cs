@@ -37,19 +37,8 @@ public static class Program
 
         var brapiClient = new BRAPIClient(token);
         var ticker = args[0].ToUpperInvariant();
-        var quote = await brapiClient.GetQuoteAsync(ticker);
-
-        if (quote is null)
-        {
-            Console.WriteLine("Quote not found.");
-            return;
-        }
-
-        var price = quote.RegularMarketPrice;
 
         var context = new Context(new Neutral());
-        var alert = ObserverQuote.MonitorPrice(context, price, sellPrice, buyPrice);
-        
-        Console.WriteLine($"{quote.Symbol}: R$ {price:F2}. Action: {alert}");
+        await ObserverQuote.ObserverPrice(context, brapiClient, ticker, sellPrice, buyPrice);
     }
 }

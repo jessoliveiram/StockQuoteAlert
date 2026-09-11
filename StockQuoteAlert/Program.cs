@@ -1,6 +1,7 @@
 ﻿using DotNetEnv;
 using System.Globalization;
 using StockQuoteAlert.Clients.BRAPI;
+using StockQuoteAlert.Configuration;
 using StockQuoteAlert.Observer;
 using StockQuoteAlert.StateMachine;
 using StockQuoteAlert.StateMachine.States;
@@ -37,8 +38,9 @@ public static class Program
 
         var brapiClient = new BRAPIClient(token);
         var ticker = args[0].ToUpperInvariant();
+        var settings = AppSettings.Load();
 
         var context = new Context(new Neutral());
-        await ObserverQuote.ObserverPrice(context, brapiClient, ticker, sellPrice, buyPrice);
+        await ObserverQuote.ObserverPrice(context, ticker, sellPrice, buyPrice, settings.Observer.IntervalSeconds, brapiClient);
     }
 }

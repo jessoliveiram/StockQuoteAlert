@@ -12,7 +12,7 @@ public class ObserverQuoteTests
     {
         var context = new Context(new Neutral());
 
-        ObserverQuote.MonitorPrice(context, 100, 100, 90);
+        ObserverQuote.CheckPrice(context, 100, 100, 90);
 
         Assert.IsType<SellAlert>(context.CurrentState);
     }
@@ -22,7 +22,7 @@ public class ObserverQuoteTests
     {
         var context = new Context(new Neutral());
 
-        ObserverQuote.MonitorPrice(context, 110, 100, 90);
+        ObserverQuote.CheckPrice(context, 110, 100, 90);
 
         Assert.IsType<SellAlert>(context.CurrentState);
     }
@@ -32,7 +32,7 @@ public class ObserverQuoteTests
     {
         var context = new Context(new Neutral());
 
-        ObserverQuote.MonitorPrice(context, 90, 100, 90);
+        ObserverQuote.CheckPrice(context, 90, 100, 90);
 
         Assert.IsType<BuyAlert>(context.CurrentState);
     }
@@ -42,7 +42,7 @@ public class ObserverQuoteTests
     {
         var context = new Context(new Neutral());
 
-        ObserverQuote.MonitorPrice(context, 80, 100, 90);
+        ObserverQuote.CheckPrice(context, 80, 100, 90);
 
         Assert.IsType<BuyAlert>(context.CurrentState);
     }
@@ -52,7 +52,7 @@ public class ObserverQuoteTests
     {
         var context = new Context(new Neutral());
 
-        ObserverQuote.MonitorPrice(context, 95, 100, 90);
+        ObserverQuote.CheckPrice(context, 95, 100, 90);
 
         Assert.IsType<Neutral>(context.CurrentState);
     }

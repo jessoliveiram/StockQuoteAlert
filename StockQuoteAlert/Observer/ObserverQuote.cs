@@ -6,9 +6,9 @@ namespace StockQuoteAlert.Observer;
 
 internal class ObserverQuote
 {
-    public static async Task ObserverPrice(Context context, BRAPIClient brapiClient, string ticker, decimal sellPrice, decimal buyPrice)
+    public static async Task ObserverPrice(Context context, string ticker, decimal sellPrice, decimal buyPrice, int intervalSeconds, BRAPIClient brapiClient)
     {
-        var timer = new PeriodicTimer(TimeSpan.FromSeconds(60));
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(intervalSeconds));
 
         while (await timer.WaitForNextTickAsync())
         {

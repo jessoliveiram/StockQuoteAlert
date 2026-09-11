@@ -6,6 +6,8 @@ internal sealed class AppSettings
 {
     public ObserverSettings Observer { get; init; } = new();
 
+    public EmailServiceSettings EmailService { get; init; } = new();
+
     public static AppSettings Load()
     {
         var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
@@ -18,4 +20,18 @@ internal sealed class AppSettings
 internal sealed class ObserverSettings
 {
     public int IntervalSeconds { get; init; }
+}
+
+internal sealed class EmailServiceSettings
+{
+    public SmtpSettings Smtp { get; init; } = new();
+    public string RecipientList { get; init; } = string.Empty;
+}
+
+internal sealed class SmtpSettings
+{
+    public string Host { get; init; } = string.Empty;
+    public int Port { get; init; }
+    public string FromAddress { get; init; } = string.Empty;
+    public string ApiKey { get; init; } = string.Empty;
 }

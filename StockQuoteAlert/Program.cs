@@ -5,8 +5,13 @@ using StockQuoteAlert.Configuration;
 using StockQuoteAlert.Observer;
 using StockQuoteAlert.StateMachine;
 using StockQuoteAlert.StateMachine.States;
+using StockQuoteAlert.Notifications;
+using System.Net.Mail;
+using FluentEmail.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-public static class Program
+public class Program
 {
     public static async Task Main()
     {
@@ -36,11 +41,27 @@ public static class Program
             return;
         }
 
+        var settings = AppSettings.Load();
+        var recipientList = settings.EmailService.RecipientList.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var observerInterval = settings.Observer.IntervalSeconds;
+
+        var builder = Host.CreateApplicationBuilder();
+        builder.Services
+            .AddFluentEmail(settings.EmailService.Smtp.FromAddress, "Stock Quote Alert")
+            .AddSmtpSender(
+                settings.EmailService.Smtp.Host, 
+                settings.EmailService.Smtp.Port,          
+                settings.EmailService.Smtp.FromAddress,
+                settings.EmailService.Smtp.ApiKey
+            );
+
+        using var host = builder.Build();
+        var emailSender = host.Services.GetRequiredService<IFluentEmailFactory>();
+
         var brapiClient = new BRAPIClient(token);
         var ticker = args[0].ToUpperInvariant();
-        var settings = AppSettings.Load();
 
         var context = new Context(new Neutral());
-        await ObserverQuote.ObserverPrice(context, ticker, sellPrice, buyPrice, settings.Observer.IntervalSeconds, brapiClient);
+        await ObserverQuote.ObserverPrice(context, ticker, sellPrice, buyPrice, observerInterval, brapiClient);
     }
 }

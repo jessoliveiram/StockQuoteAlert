@@ -1,3 +1,4 @@
+using System.Globalization;
 using FluentEmail.Core;
 
 namespace StockQuoteAlert.Notifications;
@@ -5,7 +6,7 @@ namespace StockQuoteAlert.Notifications;
 public sealed class EmailService
 {
   private const string SubjectTemplate = "{{ Action }} alert for {{ Ticker }}";
-  private const string BodyTemplate = "Hello! It's time to {{ Action }} {{ Ticker }} at {{ Price }}.";
+  private const string BodyTemplate = "Hello! I have an update on your {{ticker}}. The current price is {{price}}. It is a good time to {{action}}. Don't miss this opportunity!";
 
   private readonly IFluentEmailFactory _fluentEmailFactory;
 
@@ -21,9 +22,9 @@ public sealed class EmailService
         .Replace("{{ Ticker }}", ticker, StringComparison.Ordinal);
 
     var body = BodyTemplate
-        .Replace("{{ Action }}", action, StringComparison.Ordinal)
-        .Replace("{{ Ticker }}", ticker, StringComparison.Ordinal)
-        .Replace("{{ Price }}", price.ToString("F2"), StringComparison.Ordinal);
+      .Replace("{{action}}", action, StringComparison.Ordinal)
+      .Replace("{{ticker}}", ticker, StringComparison.Ordinal)
+      .Replace("{{price}}", price.ToString("F2", CultureInfo.InvariantCulture), StringComparison.Ordinal);
         
     foreach (var recipient in recipientList)
     {

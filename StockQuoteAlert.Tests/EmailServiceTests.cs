@@ -16,7 +16,9 @@ public class EmailServiceTests
         var sentEmail = Assert.Single(sender.Messages);
         Assert.Equal("example@example.com", sentEmail.ToAddresses[0].EmailAddress);
         Assert.Equal("buy alert for PETR4", sentEmail.Subject);
-        Assert.Contains($"It's time to buy PETR4 at {38.42m:F2}.", sentEmail.Body);
+        Assert.Contains("PETR4", sentEmail.Body);
+        Assert.Contains("38.42", sentEmail.Body);
+        Assert.Contains("buy", sentEmail.Body);
     }
 
     [Fact]
@@ -27,7 +29,9 @@ public class EmailServiceTests
         var sentEmail = Assert.Single(sender.Messages);
         Assert.Equal("example@example.com", sentEmail.ToAddresses[0].EmailAddress);
         Assert.Equal("sell alert for PETR4", sentEmail.Subject);
-        Assert.Contains($"It's time to sell PETR4 at {38.42m:F2}.", sentEmail.Body);
+        Assert.Contains("PETR4", sentEmail.Body);
+        Assert.Contains("38.42", sentEmail.Body);
+        Assert.Contains("sell", sentEmail.Body);
     }
 
     private static async Task<CapturingSender> SendEmail(string action)
@@ -36,7 +40,7 @@ public class EmailServiceTests
         var factory = new CapturingEmailFactory(sender);
         var service = new EmailService(factory);
         await service.SendEmail(
-            new List<string> { "example@example.com" },
+            new string[] { "example@example.com" },
             "PETR4",
             action,
             38.42m);

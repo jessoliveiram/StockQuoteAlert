@@ -11,9 +11,9 @@ internal class ObserverQuote
     private readonly BRAPIClient _brapiClient;
     private readonly Context _stockStateContext;
 
-    private const string BuyAlert = "You should buy the stock.";
-    private const string SellAlert = "You should sell the stock.";
-    private const string Neutral = "You should hold the stock.";
+    private const string BuyAlert = "you should buy the stock";
+    private const string SellAlert = "you should sell the stock";
+    private const string Neutral = "you should hold the stock";
 
     public ObserverQuote(int intervalSeconds, BRAPIClient brapiClient, Context stockStateContext)
     {
@@ -41,17 +41,17 @@ internal class ObserverQuote
             switch (action)
             {
                 case BuyAlert:
-                    _stockStateContext.TriggerBuyAlert();
+                    _stockStateContext.TriggerBuyAlert(ticker, price);
                     Console.WriteLine(BuyAlert);
                     break;
 
                 case SellAlert:
-                    _stockStateContext.TriggerSellAlert();
+                    _stockStateContext.TriggerSellAlert(ticker, price);
                     Console.WriteLine(SellAlert);
                     break;
 
                 default:
-                    _stockStateContext.TriggerNeutral();
+                    _stockStateContext.TriggerNeutral(ticker, price);
                     Console.WriteLine(Neutral);
                     break;
             }

@@ -57,11 +57,13 @@ public class Program
 
         using var host = builder.Build();
         var emailSender = host.Services.GetRequiredService<IFluentEmailFactory>();
+        var emailService = new EmailService(emailSender);
 
         var brapiClient = new BRAPIClient(token);
         var ticker = args[0].ToUpperInvariant();
 
-        var stockStateContext = new Context(new Neutral());
+        var initialStateNeutral = new Neutral();
+        var stockStateContext = new Context(initialStateNeutral, emailService, recipientList);
         var observerQuote = new ObserverQuote(observerInterval, brapiClient, stockStateContext);
         await observerQuote.ObserverPrice(ticker, sellPrice, buyPrice);
     }

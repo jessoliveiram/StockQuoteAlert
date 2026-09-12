@@ -9,9 +9,9 @@ abstract class State
         _context = context;
     }
 
-    public virtual void TriggerSellAlert(){}
+    public virtual void TriggerSellAlert(string ticker, decimal price){}
 
-    public virtual void TriggerBuyAlert(){}
+    public virtual void TriggerBuyAlert(string ticker, decimal price){}
 
-    public virtual void TriggerNeutral(){}
+    public virtual void TriggerNeutral(string ticker, decimal price){}
 }

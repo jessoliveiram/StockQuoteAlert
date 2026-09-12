@@ -1,4 +1,8 @@
+using FluentEmail.Core;
+using FluentEmail.Core.Interfaces;
+using FluentEmail.Core.Models;
 using StockQuoteAlert.StateMachine;
+using StockQuoteAlert.Notifications;
 using StockQuoteAlert.StateMachine.States;
 using Xunit;
 
@@ -34,7 +38,7 @@ public class StateMachineTests
     [MemberData(nameof(InitialStates))]
     public void Constructor_SetsInitialState(string initialStateName, Type expectedStateType)
     {
-        var context = new Context(CreateState(initialStateName));
+        var context = CreateContext(initialStateName);
 
         Assert.IsType(expectedStateType, context.CurrentState);
     }
@@ -46,7 +50,7 @@ public class StateMachineTests
         string triggerName,
         Type expectedStateType)
     {
-        var context = new Context(CreateState(initialStateName));
+        var context = CreateContext(initialStateName);
 
         Trigger(context, triggerName);
 
@@ -59,7 +63,7 @@ public class StateMachineTests
         string initialStateName,
         string triggerName)
     {
-        var context = new Context(CreateState(initialStateName));
+        var context = CreateContext(initialStateName);
         var stateBeforeTrigger = context.CurrentState;
 
         Trigger(context, triggerName);
@@ -75,21 +79,47 @@ public class StateMachineTests
         _ => throw new ArgumentOutOfRangeException(nameof(stateName), stateName, null)
     };
 
+    private static Context CreateContext(string initialStateName)
+    {
+        var emailService = new EmailService(new NoOpEmailFactory());
+        return new Context(CreateState(initialStateName), emailService, new[] { "test@example.com" });
+    }
+
     private static void Trigger(Context context, string triggerName)
     {
         switch (triggerName)
         {
             case "SellAlert":
-                context.TriggerSellAlert();
+                context.TriggerSellAlert("PETR4", 38.42m);
                 break;
             case "BuyAlert":
-                context.TriggerBuyAlert();
+                context.TriggerBuyAlert("PETR4",38.42m);
                 break;
             case "Neutral":
-                context.TriggerNeutral();
+                context.TriggerNeutral("PETR4", 38.42m);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(triggerName), triggerName, null);
         }
+    }
+
+    private sealed class NoOpEmailFactory : IFluentEmailFactory
+    {
+        public IFluentEmail Create()
+        {
+            return new Email("alerts@example.com", "Stock Quote Alert")
+            {
+                Sender = new NoOpSender()
+            };
+        }
+    }
+
+    private sealed class NoOpSender : ISender
+    {
+        public SendResponse Send(IFluentEmail email, CancellationToken? cancellationToken = null) => new();
+
+        public Task<SendResponse> SendAsync(
+            IFluentEmail email,
+            CancellationToken? cancellationToken = null) => Task.FromResult(new SendResponse());
     }
 }

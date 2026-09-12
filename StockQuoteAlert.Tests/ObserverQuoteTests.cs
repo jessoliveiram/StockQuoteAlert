@@ -15,7 +15,7 @@ public class ObserverQuoteTests
 
         var result = await observer.CheckPrice(100, 100, 90);
 
-        Assert.Equal("You should sell the stock.", result);
+        Assert.Equal("you should sell the stock", result);
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class ObserverQuoteTests
 
         var result = await observer.CheckPrice(110, 100, 90);
 
-        Assert.Equal("You should sell the stock.", result);
+        Assert.Equal("you should sell the stock", result);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class ObserverQuoteTests
 
         var result = await observer.CheckPrice(90, 100, 90);
 
-        Assert.Equal("You should buy the stock.", result);
+        Assert.Equal("you should buy the stock", result);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class ObserverQuoteTests
 
         var result = await observer.CheckPrice(80, 100, 90);
 
-        Assert.Equal("You should buy the stock.", result);
+        Assert.Equal("you should buy the stock", result);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class ObserverQuoteTests
 
         var result = await observer.CheckPrice(95, 100, 90);
 
-        Assert.Equal("You should hold the stock.", result);
+        Assert.Equal("you should hold the stock", result);
     }
 
     private static ObserverQuote CreateObserver()

@@ -13,12 +13,15 @@ using Microsoft.Extensions.Hosting;
 
 public class Program
 {
-    public static async Task Main()
+    public static async Task Main(string[] args)
     {
-        Console.Write("Enter ticker, sell price and buy price: ");
-        var args = Console.ReadLine()?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (args.Length == 0)
+        {
+            Console.Write("Enter ticker, sell price and buy price: ");
+            args = Console.ReadLine()?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+        }
 
-        if (args is null || args.Length != 3)
+        if (args.Length != 3)
         {
             Console.WriteLine("Usage: <TICKER> <SELL_PRICE> <BUY_PRICE>");
             Console.WriteLine("Example: PETR4 22.67 22.59");

@@ -32,5 +32,6 @@ internal sealed class SmtpSettings
 {
     public string Host { get; init; } = string.Empty;
     public int Port { get; init; }
+    public bool EnableSsl { get; init; } = true;
     public string FromAddress { get; init; } = string.Empty;
 }

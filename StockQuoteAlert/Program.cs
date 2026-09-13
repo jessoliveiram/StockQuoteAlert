@@ -42,14 +42,29 @@ public class Program
         var observerInterval = settings.Observer.IntervalSeconds;
 
         var builder = Host.CreateApplicationBuilder();
+        var EMAIL_PASSWORD = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
+        
         builder.Services
             .AddFluentEmail(settings.EmailService.Smtp.FromAddress, "Stock Quote Alert")
-            .AddSmtpSender(
-                settings.EmailService.Smtp.Host, 
-                settings.EmailService.Smtp.Port,          
-                settings.EmailService.Smtp.FromAddress,
-                Environment.GetEnvironmentVariable("EMAIL_PASSWORD") ?? string.Empty
-            );
+            .AddSmtpSender(() =>
+            {
+                var smtpClient = new SmtpClient
+                {
+                    Host = settings.EmailService.Smtp.Host,
+                    Port = settings.EmailService.Smtp.Port,
+                    EnableSsl = settings.EmailService.Smtp.EnableSsl
+                };
+
+                if (!string.IsNullOrWhiteSpace(EMAIL_PASSWORD))
+                {
+                    smtpClient.Credentials = new System.Net.NetworkCredential(
+                        settings.EmailService.Smtp.FromAddress,
+                        EMAIL_PASSWORD
+                    );
+                }
+
+                return smtpClient;
+            });
 
         using var host = builder.Build();
         var emailSender = host.Services.GetRequiredService<IFluentEmailFactory>();

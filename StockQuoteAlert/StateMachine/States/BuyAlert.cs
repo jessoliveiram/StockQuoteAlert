@@ -24,7 +24,7 @@ class BuyAlert : State
 
         try
         {
-            await _context.EmailService.SendEmail(_context.RecipientList, ticker, StockAction.Sell, price);
+            await _context.AlertNotifier.SendEmail(_context.RecipientList, ticker, StockAction.Sell, price);
         }
         catch (Exception ex)
         {

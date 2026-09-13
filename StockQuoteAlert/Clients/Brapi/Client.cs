@@ -2,10 +2,11 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using StockQuoteAlert.Clients;
 
 namespace StockQuoteAlert.Clients.BRAPI;
 
-public class BRAPIClient
+public class BRAPIClient : IQuoteProvider
 {
     private readonly HttpClient _httpClient;
     private const string BaseUrl = "https://brapi.dev/api";

@@ -1,5 +1,6 @@
 using StockQuoteAlert.StateMachine;
 using StockQuoteAlert.Clients.BRAPI;
+using StockQuoteAlert.Clients;
 using StockQuoteAlert.Domain;
 using PeriodicTimer = System.Threading.PeriodicTimer;
 using StockQuoteAlert.StateMachine.States;
@@ -9,13 +10,13 @@ namespace StockQuoteAlert.Monitor;
 internal class QuoteMonitor
 {
     private readonly int _intervalSeconds;
-    private readonly BRAPIClient _brapiClient;
+    private readonly IQuoteProvider _quoteProvider;
     private readonly Context _stockStateContext;
 
 
-    public QuoteMonitor(int intervalSeconds, BRAPIClient brapiClient, Context stockStateContext)
+    public QuoteMonitor(int intervalSeconds, IQuoteProvider quoteProvider, Context stockStateContext)
     {
-        _brapiClient = brapiClient;
+        _quoteProvider = quoteProvider;
         _intervalSeconds = intervalSeconds;
         _stockStateContext = stockStateContext;
     }
@@ -34,7 +35,7 @@ internal class QuoteMonitor
 
     public async Task<bool> EvaluateStateByAction(string ticker, decimal sellPrice, decimal buyPrice, CancellationToken cancellationToken)
     {
-        var quote = await _brapiClient.GetQuoteAsync(ticker, cancellationToken);
+        var quote = await _quoteProvider.GetQuoteAsync(ticker, cancellationToken);
         if (quote is null)
         {
             Console.WriteLine("Quote not found.");

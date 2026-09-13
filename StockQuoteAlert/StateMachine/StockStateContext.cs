@@ -4,14 +4,14 @@ namespace StockQuoteAlert.StateMachine;
 class Context
 {
     private State _state = null!;
-    private readonly EmailService _emailService;
+    private readonly IAlertNotifier _alertNotifier;
     private readonly string[] _recipientList;
 
     internal State CurrentState => _state;
 
-    public Context(State state, EmailService emailService, string[] recipientList)
+    public Context(State state, IAlertNotifier alertNotifier, string[] recipientList)
     {
-        _emailService = emailService;
+        _alertNotifier = alertNotifier;
         _recipientList = recipientList;
         TransitionTo(state);
     }
@@ -24,7 +24,7 @@ class Context
         _state.SetContext(this);
     }
 
-    public EmailService EmailService => _emailService;
+    public IAlertNotifier AlertNotifier => _alertNotifier;
     public string[] RecipientList => _recipientList;
 
 

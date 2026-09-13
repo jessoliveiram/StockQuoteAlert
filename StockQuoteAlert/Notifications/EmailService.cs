@@ -4,7 +4,7 @@ using StockQuoteAlert.Domain;
 
 namespace StockQuoteAlert.Notifications;
 
-public sealed class EmailService
+public sealed class EmailService : IAlertNotifier
 {
   private const string SubjectTemplate = "{{ Action }} alert for {{ Ticker }}";
   private const string BodyTemplate = "Hello! I have an update on your {{ticker}}. The current price is {{price}}. It is a good time to {{action}}. Don't miss this opportunity!";

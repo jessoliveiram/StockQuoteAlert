@@ -28,18 +28,18 @@ class Context
     public string[] RecipientList => _recipientList;
 
 
-    public void TriggerSellAlert(string ticker, decimal price)
+    public Task TriggerSellAlert(string ticker, decimal price)
     {
-        _state.TriggerSellAlert(ticker, price);
+        return _state.TriggerSellAlert(ticker, price);
     }
 
-    public void TriggerBuyAlert(string ticker, decimal price)
+    public Task TriggerBuyAlert(string ticker, decimal price)
     {
-        _state.TriggerBuyAlert(ticker, price);
+        return _state.TriggerBuyAlert(ticker, price);
     }
 
-    public void TriggerNeutral(string ticker, decimal price)
+    public Task TriggerNeutral(string ticker, decimal price)
     {
-        _state.TriggerNeutral(ticker, price);
+        return _state.TriggerNeutral(ticker, price);
     }
 }

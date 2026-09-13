@@ -45,28 +45,28 @@ public class StateMachineTests
 
     [Theory]
     [MemberData(nameof(Transitions))]
-    public void Trigger_TransitionsToExpectedState(
+    public async Task Trigger_TransitionsToExpectedState(
         string initialStateName,
         string triggerName,
         Type expectedStateType)
     {
         var context = CreateContext(initialStateName);
 
-        Trigger(context, triggerName);
+        await Trigger(context, triggerName);
 
         Assert.IsType(expectedStateType, context.CurrentState);
     }
 
     [Theory]
     [MemberData(nameof(NoOpTriggers))]
-    public void UnsupportedTrigger_PreservesCurrentState(
+    public async Task UnsupportedTrigger_PreservesCurrentState(
         string initialStateName,
         string triggerName)
     {
         var context = CreateContext(initialStateName);
         var stateBeforeTrigger = context.CurrentState;
 
-        Trigger(context, triggerName);
+        await Trigger(context, triggerName);
 
         Assert.Same(stateBeforeTrigger, context.CurrentState);
     }
@@ -85,19 +85,16 @@ public class StateMachineTests
         return new Context(CreateState(initialStateName), emailService, new[] { "test@example.com" });
     }
 
-    private static void Trigger(Context context, string triggerName)
+    private static Task Trigger(Context context, string triggerName)
     {
         switch (triggerName)
         {
             case "SellAlert":
-                context.TriggerSellAlert("PETR4", 38.42m);
-                break;
+                return context.TriggerSellAlert("PETR4", 38.42m);
             case "BuyAlert":
-                context.TriggerBuyAlert("PETR4",38.42m);
-                break;
+                return context.TriggerBuyAlert("PETR4",38.42m);
             case "Neutral":
-                context.TriggerNeutral("PETR4", 38.42m);
-                break;
+                return context.TriggerNeutral("PETR4", 38.42m);
             default:
                 throw new ArgumentOutOfRangeException(nameof(triggerName), triggerName, null);
         }

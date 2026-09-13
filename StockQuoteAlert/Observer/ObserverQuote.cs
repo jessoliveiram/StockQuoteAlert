@@ -20,11 +20,11 @@ internal class ObserverQuote
         _stockStateContext = stockStateContext;
     }
 
-    public async Task ObserverPrice(string ticker, decimal sellPrice, decimal buyPrice)
+    public async Task ObserverPrice(string ticker, decimal sellPrice, decimal buyPrice, CancellationToken cancellationToken = default)
     {
-        var timer = new PeriodicTimer(TimeSpan.FromSeconds(_intervalSeconds));
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(_intervalSeconds));
 
-        while (await timer.WaitForNextTickAsync())
+        while (await timer.WaitForNextTickAsync(cancellationToken))
         {
             var quote = await _brapiClient.GetQuoteAsync(ticker);
             if (quote is null)
@@ -39,17 +39,17 @@ internal class ObserverQuote
             switch (action)
             {
                 case StockAction.Buy:
-                    _stockStateContext.TriggerBuyAlert(ticker, price);
+                    await _stockStateContext.TriggerBuyAlert(ticker, price);
                     Console.WriteLine(action.ToConsoleMessage());
                     break;
 
                 case StockAction.Sell:
-                    _stockStateContext.TriggerSellAlert(ticker, price);
+                    await _stockStateContext.TriggerSellAlert(ticker, price);
                     Console.WriteLine(action.ToConsoleMessage());
                     break;
 
                 default:
-                    _stockStateContext.TriggerNeutral(ticker, price);
+                    await _stockStateContext.TriggerNeutral(ticker, price);
                     Console.WriteLine(action.ToConsoleMessage());
                     break;
             }

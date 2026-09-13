@@ -36,13 +36,6 @@ public class Program
         }
 
         Env.TraversePath().Load("local.env");
-        var token = Environment.GetEnvironmentVariable("BRAPI_TOKEN");
-
-        if (string.IsNullOrWhiteSpace(token))
-        {
-            Console.WriteLine("BRAPI_TOKEN not found in environment variables.");
-            return;
-        }
 
         var settings = AppSettings.Load();
         var recipientList = settings.EmailService.RecipientList.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -62,7 +55,7 @@ public class Program
         var emailSender = host.Services.GetRequiredService<IFluentEmailFactory>();
         var emailService = new EmailService(emailSender);
 
-        var brapiClient = new BRAPIClient(token);
+        var brapiClient = new BRAPIClient();
         var ticker = args[0].ToUpperInvariant();
 
         var initialStateNeutral = new Neutral();

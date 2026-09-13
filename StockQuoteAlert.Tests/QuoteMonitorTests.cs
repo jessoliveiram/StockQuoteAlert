@@ -58,7 +58,7 @@ public class QuoteMonitorTests
         var context = new Context(new Neutral(), notifier, Array.Empty<string>());
         var monitor = new QuoteMonitor(
             60,
-            new FakeQuoteProvider(new Quote { Symbol = "PETR4", RegularMarketPrice = 90 }),
+            new FakeQuoteProvider(new Quote { Symbol = "PETR4", Data = new QuoteData { RegularMarketPrice = 90 } }),
             context);
 
         var result = await monitor.EvaluateStateByAction("PETR4", 100, 95, CancellationToken.None);
@@ -75,7 +75,7 @@ public class QuoteMonitorTests
         var context = new Context(new Neutral(), notifier, Array.Empty<string>());
         var monitor = new QuoteMonitor(
             60,
-            new FakeQuoteProvider(new Quote { Symbol = "PETR4", RegularMarketPrice = 110 }),
+            new FakeQuoteProvider(new Quote { Symbol = "PETR4", Data = new QuoteData { RegularMarketPrice = 110 } }),
             context);
 
         var result = await monitor.EvaluateStateByAction("PETR4", 100, 95, CancellationToken.None);

@@ -15,10 +15,12 @@ public class ClientTests
               "results": [
                 {
                   "symbol": "B3SA3",
-                  "longName": "B3 SA - Brasil, Bolsa, Balcao",
-                  "currency": "BRL",
-                  "regularMarketPrice": 17.27,
-                  "regularMarketChangePercent": -2.1
+                  "data": {
+                    "longName": "B3 SA - Brasil, Bolsa, Balcao",
+                    "currency": "BRL",
+                    "regularMarketPrice": 17.27,
+                    "regularMarketChangePercent": -2.1
+                  }
                 }
               ]
             }
@@ -30,12 +32,12 @@ public class ClientTests
 
         Assert.NotNull(quote);
         Assert.Equal(HttpMethod.Get, handler.Request!.Method);
-        Assert.Equal("https://brapi.dev/api/quote/B3SA3", handler.Request.RequestUri!.ToString());
+        Assert.Equal("https://brapi.dev/api/v2/stocks/quote?symbols=B3SA3", handler.Request.RequestUri!.ToString());
         Assert.Equal("B3SA3", quote.Symbol);
-        Assert.Equal("B3 SA - Brasil, Bolsa, Balcao", quote.LongName);
-        Assert.Equal("BRL", quote.Currency);
-        Assert.Equal(17.27m, quote.RegularMarketPrice);
-        Assert.Equal(-2.1m, quote.RegularMarketChangePercent);
+        Assert.Equal("B3 SA - Brasil, Bolsa, Balcao", quote.Data.LongName);
+        Assert.Equal("BRL", quote.Data.Currency);
+        Assert.Equal(17.27m, quote.Data.RegularMarketPrice);
+        Assert.Equal(-2.1m, quote.Data.RegularMarketChangePercent);
     }
 
     [Fact]

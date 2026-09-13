@@ -9,36 +9,42 @@ namespace StockQuoteAlert.Clients.BRAPI;
 public class BRAPIClient : IQuoteProvider
 {
     private readonly HttpClient _httpClient;
-    private const string BaseUrl = "https://brapi.dev/api";
+    private const string BaseUrl = "https://brapi.dev";
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
     
-    public BRAPIClient(string token): this(CreateHttpClient(token)){}
+    public BRAPIClient(): this(CreateHttpClient()){}
 
     public BRAPIClient(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
 
-    private static HttpClient CreateHttpClient(string token)
+    private static HttpClient CreateHttpClient()
     {
         var httpClient = new HttpClient()
         {
             Timeout = TimeSpan.FromSeconds(10)
         };
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
+
         return httpClient;
     }
 
     public async Task<Quote?> GetQuoteAsync(string ticker, CancellationToken ct = default)
     {
-        var url = $"{BaseUrl}/quote/{ticker}";
+        var url = $"{BaseUrl}/api/v2/stocks/quote?symbols={ticker}";
         var response = await _httpClient.GetStringAsync(url, ct);
 
         var data = JsonSerializer.Deserialize<QuoteResponse>(response, JsonOptions);
-        return data?.Results?.FirstOrDefault();
+        var quote = data?.Results?.FirstOrDefault();
+        
+        if (quote?.Data == null || quote.Data.RegularMarketPrice == 0)
+        {
+            return null;
+        }
+        
+        return quote;
     }
 }

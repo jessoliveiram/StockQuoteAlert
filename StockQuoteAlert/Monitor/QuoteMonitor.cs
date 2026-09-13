@@ -42,7 +42,7 @@ internal class QuoteMonitor
             return false;
         }
 
-        var price = quote.RegularMarketPrice;
+        var price = quote.Data.RegularMarketPrice;
         var action = EvaluateActionByPrice(price, sellPrice, buyPrice);
 
         switch (action)

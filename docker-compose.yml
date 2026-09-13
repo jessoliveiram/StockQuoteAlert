@@ -1,0 +1,15 @@
+services:
+  stockquotealert:
+    build:
+      context: ./StockQuoteAlert
+    container_name: stockquotealert
+    restart: unless-stopped
+
+  tests:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    profiles:
+      - test
+    working_dir: /src
+    volumes:
+      - .:/src
+    command: ["dotnet", "test", "StockQuoteAlert.Tests/StockQuoteAlert.Tests.csproj"]

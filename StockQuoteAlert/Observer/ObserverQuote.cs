@@ -1,5 +1,6 @@
 using StockQuoteAlert.StateMachine;
 using StockQuoteAlert.Clients.BRAPI;
+using StockQuoteAlert.Domain;
 using PeriodicTimer = System.Threading.PeriodicTimer;
 using StockQuoteAlert.StateMachine.States;
 
@@ -11,9 +12,6 @@ internal class ObserverQuote
     private readonly BRAPIClient _brapiClient;
     private readonly Context _stockStateContext;
 
-    private const string BuyAlert = "you should buy the stock";
-    private const string SellAlert = "you should sell the stock";
-    private const string Neutral = "you should hold the stock";
 
     public ObserverQuote(int intervalSeconds, BRAPIClient brapiClient, Context stockStateContext)
     {
@@ -36,44 +34,44 @@ internal class ObserverQuote
             }
 
             var price = quote.RegularMarketPrice;
-            var action = await CheckPrice(price, sellPrice, buyPrice);
+            var action = CheckPrice(price, sellPrice, buyPrice);
 
             switch (action)
             {
-                case BuyAlert:
+                case StockAction.Buy:
                     _stockStateContext.TriggerBuyAlert(ticker, price);
-                    Console.WriteLine(BuyAlert);
+                    Console.WriteLine(action.ToConsoleMessage());
                     break;
 
-                case SellAlert:
+                case StockAction.Sell:
                     _stockStateContext.TriggerSellAlert(ticker, price);
-                    Console.WriteLine(SellAlert);
+                    Console.WriteLine(action.ToConsoleMessage());
                     break;
 
                 default:
                     _stockStateContext.TriggerNeutral(ticker, price);
-                    Console.WriteLine(Neutral);
+                    Console.WriteLine(action.ToConsoleMessage());
                     break;
             }
         }
     }
 
-    public async Task<string> CheckPrice(decimal price, decimal sellPrice, decimal buyPrice)
+    public StockAction CheckPrice(decimal price, decimal sellPrice, decimal buyPrice)
     {
         if (ShouldSell(sellPrice, price))
         {
             Console.WriteLine($"Price {price} is greater than or equal to sell price {sellPrice}");
-            return SellAlert;
+            return StockAction.Sell;
         }
         else if (ShouldBuy(buyPrice, price))
         {
             Console.WriteLine($"Price {price} is less than or equal to buy price {buyPrice}");
-            return BuyAlert;
+            return StockAction.Buy;
         }
         else
         {
             Console.WriteLine($"Price {price} is between sell price {sellPrice} and buy price {buyPrice}.");
-            return Neutral;
+            return StockAction.Neutral;
         }
     }
 

@@ -1,5 +1,7 @@
 namespace StockQuoteAlert.StateMachine.States;
 
+using StockQuoteAlert.Domain;
+
 
 class SellAlert : State
 {
@@ -18,7 +20,7 @@ class SellAlert : State
         {
             try
             {
-                await _context.EmailService.SendEmail(_context.RecipientList, ticker, "buy", price);
+                await _context.EmailService.SendEmail(_context.RecipientList, ticker, StockAction.Buy, price);
             }
             catch (Exception ex)
             {

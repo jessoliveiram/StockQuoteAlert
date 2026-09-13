@@ -1,6 +1,7 @@
 using FluentEmail.Core;
 using FluentEmail.Core.Interfaces;
 using FluentEmail.Core.Models;
+using StockQuoteAlert.Domain;
 using StockQuoteAlert.Notifications;
 using Xunit;
 
@@ -11,7 +12,7 @@ public class EmailServiceTests
     [Fact]
     public async Task SendEmail_WhenActionIsBuy_RendersBuyTemplate()
     {
-        var sender = await SendEmail("buy");
+        var sender = await SendEmail(StockAction.Buy);
 
         var sentEmail = Assert.Single(sender.Messages);
         Assert.Equal("example@example.com", sentEmail.ToAddresses[0].EmailAddress);
@@ -24,7 +25,7 @@ public class EmailServiceTests
     [Fact]
     public async Task SendEmail_WhenActionIsSell_RendersSellTemplate()
     {
-        var sender = await SendEmail("sell");
+        var sender = await SendEmail(StockAction.Sell);
 
         var sentEmail = Assert.Single(sender.Messages);
         Assert.Equal("example@example.com", sentEmail.ToAddresses[0].EmailAddress);
@@ -34,7 +35,15 @@ public class EmailServiceTests
         Assert.Contains("sell", sentEmail.Body);
     }
 
-    private static async Task<CapturingSender> SendEmail(string action)
+    [Fact]
+    public async Task SendEmail_WhenActionIsNeutral_DoesNotSend()
+    {
+        var sender = await SendEmail(StockAction.Neutral);
+
+        Assert.Empty(sender.Messages);
+    }
+
+    private static async Task<CapturingSender> SendEmail(StockAction action)
     {
         var sender = new CapturingSender();
         var factory = new CapturingEmailFactory(sender);

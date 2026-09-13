@@ -1,5 +1,6 @@
 using StockQuoteAlert.Observer;
 using StockQuoteAlert.Clients.BRAPI;
+using StockQuoteAlert.Domain;
 using StockQuoteAlert.StateMachine;
 using StockQuoteAlert.StateMachine.States;
 using Xunit;
@@ -9,53 +10,53 @@ namespace StockQuoteAlert.Tests;
 public class ObserverQuoteTests
 {
     [Fact]
-    public async Task CheckPrice_WhenPriceEqualsSellPrice_ReturnsSellAlert()
+    public void CheckPrice_WhenPriceEqualsSellPrice_ReturnsSellAlert()
     {
         var observer = CreateObserver();
 
-        var result = await observer.CheckPrice(100, 100, 90);
+        var result = observer.CheckPrice(100, 100, 90);
 
-        Assert.Equal("you should sell the stock", result);
+        Assert.Equal(StockAction.Sell, result);
     }
 
     [Fact]
-    public async Task CheckPrice_WhenPriceIsAboveSellPrice_ReturnsSellAlert()
+    public void CheckPrice_WhenPriceIsAboveSellPrice_ReturnsSellAlert()
     {
         var observer = CreateObserver();
 
-        var result = await observer.CheckPrice(110, 100, 90);
+        var result = observer.CheckPrice(110, 100, 90);
 
-        Assert.Equal("you should sell the stock", result);
+        Assert.Equal(StockAction.Sell, result);
     }
 
     [Fact]
-    public async Task CheckPrice_WhenPriceEqualsBuyPrice_ReturnsBuyAlert()
+    public void CheckPrice_WhenPriceEqualsBuyPrice_ReturnsBuyAlert()
     {
         var observer = CreateObserver();
 
-        var result = await observer.CheckPrice(90, 100, 90);
+        var result = observer.CheckPrice(90, 100, 90);
 
-        Assert.Equal("you should buy the stock", result);
+        Assert.Equal(StockAction.Buy, result);
     }
 
     [Fact]
-    public async Task CheckPrice_WhenPriceIsBelowBuyPrice_ReturnsBuyAlert()
+    public void CheckPrice_WhenPriceIsBelowBuyPrice_ReturnsBuyAlert()
     {
         var observer = CreateObserver();
 
-        var result = await observer.CheckPrice(80, 100, 90);
+        var result = observer.CheckPrice(80, 100, 90);
 
-        Assert.Equal("you should buy the stock", result);
+        Assert.Equal(StockAction.Buy, result);
     }
 
     [Fact]
-    public async Task CheckPrice_WhenPriceIsBetweenThresholds_ReturnsNeutral()
+    public void CheckPrice_WhenPriceIsBetweenThresholds_ReturnsNeutral()
     {
         var observer = CreateObserver();
 
-        var result = await observer.CheckPrice(95, 100, 90);
+        var result = observer.CheckPrice(95, 100, 90);
 
-        Assert.Equal("you should hold the stock", result);
+        Assert.Equal(StockAction.Neutral, result);
     }
 
     private static ObserverQuote CreateObserver()

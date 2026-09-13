@@ -1,5 +1,6 @@
 using System.Globalization;
 using FluentEmail.Core;
+using StockQuoteAlert.Domain;
 
 namespace StockQuoteAlert.Notifications;
 
@@ -15,14 +16,20 @@ public sealed class EmailService
     _fluentEmailFactory = fluentEmailFactory;
   }
 
-  public async Task SendEmail(string[] recipientList, string ticker, string action, decimal price)
+  public async Task SendEmail(string[] recipientList, string ticker, StockAction action, decimal price)
   {
+    if (action == StockAction.Neutral)
+    {
+        return;
+    }
+
+    var emailAction = action.ToEmailAction();
     var subject = SubjectTemplate
-        .Replace("{{ Action }}", action, StringComparison.Ordinal)
+        .Replace("{{ Action }}", emailAction, StringComparison.Ordinal)
         .Replace("{{ Ticker }}", ticker, StringComparison.Ordinal);
 
     var body = BodyTemplate
-      .Replace("{{action}}", action, StringComparison.Ordinal)
+      .Replace("{{action}}", emailAction, StringComparison.Ordinal)
       .Replace("{{ticker}}", ticker, StringComparison.Ordinal)
       .Replace("{{price}}", price.ToString("F2", CultureInfo.InvariantCulture), StringComparison.Ordinal);
         

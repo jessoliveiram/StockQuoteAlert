@@ -33,5 +33,4 @@ internal sealed class SmtpSettings
     public string Host { get; init; } = string.Empty;
     public int Port { get; init; }
     public string FromAddress { get; init; } = string.Empty;
-    public string ApiKey { get; init; } = string.Empty;
 }

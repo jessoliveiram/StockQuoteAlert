@@ -55,7 +55,7 @@ public class Program
                 settings.EmailService.Smtp.Host, 
                 settings.EmailService.Smtp.Port,          
                 settings.EmailService.Smtp.FromAddress,
-                settings.EmailService.Smtp.ApiKey
+                Environment.GetEnvironmentVariable("EMAIL_PASSWORD") ?? string.Empty
             );
 
         using var host = builder.Build();

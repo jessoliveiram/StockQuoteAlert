@@ -2,7 +2,7 @@
 using System.Globalization;
 using StockQuoteAlert.Clients.BRAPI;
 using StockQuoteAlert.Configuration;
-using StockQuoteAlert.Observer;
+using StockQuoteAlert.Monitor;
 using StockQuoteAlert.StateMachine;
 using StockQuoteAlert.StateMachine.States;
 using StockQuoteAlert.Notifications;
@@ -67,7 +67,7 @@ public class Program
 
         var initialStateNeutral = new Neutral();
         var stockStateContext = new Context(initialStateNeutral, emailService, recipientList);
-        var observerQuote = new ObserverQuote(observerInterval, brapiClient, stockStateContext);
-        await observerQuote.ObserverPrice(ticker, sellPrice, buyPrice);
+        var quoteMonitor = new QuoteMonitor(observerInterval, brapiClient, stockStateContext);
+        await quoteMonitor.StartMonitoring(ticker, sellPrice, buyPrice);
     }
 }

@@ -145,6 +145,18 @@ A transição entre estados é automática e um alerta por e-mail é enviado a c
 - **MailPit**: Servidor SMTP de testes
 - **xUnit**: Framework de testes unitários
 
+## Uso de inteligência artificial
+
+Foi utilizado o **GitHub Copilot** como ferramenta de apoio durante o desenvolvimento, nas seguintes atividades:
+
+- elaboração dos testes unitários, sempre com avaliação e validação manual dos resultados;
+- esclarecimento sobre a linguagem C# e o ecossistema .NET;
+- revisão de código.
+
+A implementação da State Machine foi baseada integralmente na implementação de referência indicada em [State Pattern - Refactoring Guru](https://refactoring.guru/pt-br/design-patterns/state/csharp/example), que também está listada nas referências deste documento.
+
+As decisões técnicas, a definição da arquitetura, a adaptação da referência ao problema e a solução final foram de responsabilidade do autor. O uso da IA serviu como apoio e não substituiu a análise crítica.
+
 ## Referências
 
 - [BRAPI - API de Cotações](https://brapi.dev/docs)

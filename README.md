@@ -67,7 +67,7 @@ Visualize os e-mails em <http://localhost:8025>.
 
 As configurações do servidor SMTP podem ser sobrescritas por variáveis de ambiente. Configure as variáveis de acordo com o servidor SMTP escolhido.  
 
-**Nota**: O Gmail requer uma "Senha de App". É necessário acessar as configurações de segurança da sua conta Google para gerar uma. O endereço em `FromAddress` é usado como usuário SMTP e deve coincidor com o email em que a senha foi gerada. 
+**Nota**: O Gmail requer uma "Senha de App". É necessário acessar as configurações de segurança da sua conta Google para gerar uma. O endereço em `FromAddress` é usado como usuário SMTP e deve coincidir com o e-mail em que a senha foi gerada. 
 
 Copie o arquivo de exemplo `.env.example` para `.env` dentro da pasta `StockQuoteAlert`:
 
@@ -159,3 +159,10 @@ As decisões técnicas, a definição da arquitetura, a adaptação da referênc
 - [Mailtrap - Sending Emails in C#](https://mailtrap.io/blog/csharp-send-email/)
 - [MailPit - Inspect captured messages](https://mailpit.axllent.org/docs/usage/)
 - [Interfaces in Go and C#](https://rselbach.com/interfaces-go-c/)
+
+## Evolução do projeto
+
+Como próximos passos para a evolução da aplicação, estão previstos:
+
+- **Observabilidade**: capturar e estruturar os logs da aplicação para facilitar o monitoramento, utilizando o OpenTelemetry. A documentação está disponível em [OpenTelemetry .NET - Logs getting started](https://opentelemetry.io/docs/languages/dotnet/logs/getting-started-console/).
+- **Desacoplamento do envio de e-mails**: substituir o envio direto de e-mails por uma arquitetura baseada em mensageria, utilizando, por exemplo, o RabbitMQ. O monitoramento publicará as notificações em uma fila, e um consumidor ficará responsável pelo envio. A documentação está disponível em [RabbitMQ Tutorials](https://www.rabbitmq.com/tutorials).

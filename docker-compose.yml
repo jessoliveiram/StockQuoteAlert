@@ -19,6 +19,8 @@ services:
     build:
       context: ./StockQuoteAlert
     container_name: stockquotealert
+    environment:
+      SMTP_HOST: mailpit
     restart: unless-stopped
     depends_on:
       mailpit:

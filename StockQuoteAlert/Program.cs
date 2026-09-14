@@ -40,6 +40,9 @@ public class Program
         var settings = AppSettings.Load();
         var recipientList = settings.EmailService.RecipientList.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var observerInterval = settings.Observer.IntervalSeconds;
+        var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST") ?? settings.EmailService.Smtp.Host;
+        var smtpPort = int.TryParse(Environment.GetEnvironmentVariable("SMTP_PORT"), out var port) ? port : settings.EmailService.Smtp.Port;
+        var enableSsl = bool.TryParse(Environment.GetEnvironmentVariable("ENABLE_SSL"), out var ssl) ? ssl : settings.EmailService.Smtp.EnableSsl;
 
         var builder = Host.CreateApplicationBuilder();
         var EMAIL_PASSWORD = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
@@ -50,9 +53,9 @@ public class Program
             {
                 var smtpClient = new SmtpClient
                 {
-                    Host = settings.EmailService.Smtp.Host,
-                    Port = settings.EmailService.Smtp.Port,
-                    EnableSsl = settings.EmailService.Smtp.EnableSsl
+                    Host = smtpHost,
+                    Port = smtpPort,
+                    EnableSsl = enableSsl
                 };
 
                 if (!string.IsNullOrWhiteSpace(EMAIL_PASSWORD))

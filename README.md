@@ -43,57 +43,51 @@ docker compose --profile test run --rm tests
 
 ## 2. Executar diretamente com .NET
 
-Entre na pasta da aplicação:
-
-```bash
-cd StockQuoteAlert
-```
-
 ### Usar MailPit
 
 Inicie o MailPit na raiz do projeto. Não preencha `.env` para usar o MailPit:
 
 ```bash
-cd ..
 docker compose up -d mailpit
+```
+
+Entre na pasta `StockQuoteAlert` e execute a aplicação:
+
+```bash
 cd StockQuoteAlert
 ```
 
-Execute a aplicação:
-
 ```bash
-dotnet run -- PETR4 22.67 22.59
+dotnet run PETR4 22.67 22.59
 ```
 
 Visualize os e-mails em <http://localhost:8025>.
 
 ### Usar um servidor SMTP real
 
-Para servidores SMTP reais, defina `EnableSsl: true` no `appsettings.json` e configure `EMAIL_PASSWORD` no `.env`
+As configurações do servidor SMTP podem ser sobrescritas por variáveis de ambiente. Configure as variáveis de acordo com o servidor SMTP escolhido.  
 
 **Nota**: O Gmail requer uma "Senha de App". É necessário acessar as configurações de segurança da sua conta Google para gerar uma. O endereço em `FromAddress` é usado como usuário SMTP e deve coincidor com o email em que a senha foi gerada. 
 
-Exemplo de configuração do servidor, porta e SSL em `StockQuoteAlert/appsettings.json` para Gmail:
+Copie o arquivo de exemplo `.env.example` para `.env` dentro da pasta `StockQuoteAlert`:
 
-```json
-"Smtp": {
-  "Host": "smtp.gmail.com",
-  "Port": 587,
-  "EnableSsl": true,
-  "FromAddress": "seu-email@gmail.com"
-}
+```bash
+cp .env.example .env
 ```
 
-Preencha a senha SMTP no `StockQuoteAlert/.env`:
+Para Gmail, use as seguintes configurações:
 
 ```env
-EMAIL_PASSWORD=sua_senha_smtp
+EMAIL_PASSWORD=sua_senha_de_app
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+ENABLE_SSL=true
 ```
 
 Execute a aplicação:
 
 ```bash
-dotnet run -- PETR4 22.67 22.59
+dotnet run PETR4 22.67 22.59
 ```
 
 ### Gerar e executar o binário
